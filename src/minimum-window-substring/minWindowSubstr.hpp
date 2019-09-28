@@ -1,3 +1,7 @@
+/** \file
+ * \brief Minimum Window Substring implementation.
+ */
+
 #ifndef ALGORITHMS_MIN_WINDOW_SUBSTR_HPP_INCLUDED
 #define ALGORITHMS_MIN_WINDOW_SUBSTR_HPP_INCLUDED
 
@@ -6,9 +10,10 @@
 #include <type_traits>
 #include <unordered_map>
 
+/// Algorithms namespace.
 namespace algos {
 
-/// Return type of minWindowSubstr function.
+/// Return type of minWindowSubstr() function.
 template <typename Iter>
 using ReturnType = std::tuple<Iter, Iter, std::size_t>;
 
@@ -18,8 +23,8 @@ using ReturnType = std::tuple<Iter, Iter, std::size_t>;
  * \param first begin iterator of the range
  * \param last end (one-past-last) iterator of the range
  *
- * \return tuple (window-start-iter, window-end-iter, window-length)
- * window end is iterator to one-past-last element of the window
+ * \return tuple (window-start-iter, window-end-iter, window-length)\n 
+ * \a window-end-iter is iterator to one-past-last element of the window
  */
 template <typename Iter>
 ReturnType<Iter> minWindowSubstr(Iter first, Iter last) {
