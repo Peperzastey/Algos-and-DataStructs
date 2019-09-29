@@ -19,12 +19,24 @@ using ReturnType = std::tuple<Iter, Iter, std::size_t>;
 
 /// Find minimum window substring containing all unique elements of the input range.
 /**
+ * Complexity:
+ * - Time:  O(n)
+ * - Space: O(k)
+ *
+ * where:
+ * - n - size of the input range
+ * - k - number of unique elements in the input range
+ *
  * \tparam Iter iterator type, must meet the requirements of LegacyForwardIterator
  * \param first begin iterator of the range
  * \param last end (one-past-last) iterator of the range
  *
- * \return tuple (window-start-iter, window-end-iter, window-length)\n 
- * \a window-end-iter is iterator to one-past-last element of the window
+ * \return
+ * \parblock
+ * `tuple(window-start-iter, window-end-iter, window-length)` representing the minimum substring found
+ *
+ * \c window-end-iter is an iterator to one-past-last element of the window
+ * \endparblock
  */
 template <typename Iter>
 ReturnType<Iter> minWindowSubstr(Iter first, Iter last) {
@@ -48,6 +60,10 @@ ReturnType<Iter> minWindowSubstr(Iter first, Iter last) {
     Iter currStart = first;  // current start inclusive
     Iter newPos = currStart; // current end inclusive
     for(; newPos != last; newPos = std::next(newPos)) {
+        if (wLength == uniqueElems) { // found the first minimal window
+            break;
+        }
+
         const auto count = ++elementCounts.at(*newPos);
         if (count == 1) {
             ++elemsPresent;
@@ -60,6 +76,7 @@ ReturnType<Iter> minWindowSubstr(Iter first, Iter last) {
                 wStart = currStart;
                 wEnd = std::next(newPos);
             }
+            //if (wLength == uniqueElems) // found the first minimal window
 
             const auto count = --elementCounts.at(*currStart);
             if (count == 0) {
