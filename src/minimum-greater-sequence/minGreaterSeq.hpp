@@ -59,6 +59,7 @@ bool minGreaterSeqInPlace(BidirIt first, BidirIt last) {
         return false;
     }
 
+    //TODO std::adjacent_find + std::less + std::make_reverse_iterator
     auto elemToRight = std::prev(last);
     auto firstLess = std::prev(elemToRight);
     while (!(*firstLess < *elemToRight)) {
@@ -69,6 +70,7 @@ bool minGreaterSeqInPlace(BidirIt first, BidirIt last) {
         --firstLess;
     }
 
+    //TODO std::find_if
     auto minGreaterElemToRight = elemToRight;
     while (++elemToRight != last) {
         if ((*firstLess < *elemToRight) && !(*minGreaterElemToRight < *elemToRight)) {
@@ -83,7 +85,6 @@ bool minGreaterSeqInPlace(BidirIt first, BidirIt last) {
     std::iter_swap(firstLess, minGreaterElemToRight);
 
     // the right-rest is always in non-ascending order (from left to right)
-    // sometimes already in non-descending order (e.g. 1222 -> 2122)
     // make it non-descending (reverse the right-rest range)
 
     elemToRight = std::next(firstLess);

@@ -34,9 +34,9 @@ using ReturnType = std::tuple<Iter, Iter, std::size_t>;
  *
  * \return
  *   \parblock
- *     `tuple(window-start-iter, window-end-iter, window-length)` representing the minimum substring found
+ *     `tuple(window_start_iter, window_end_iter, window_length)` representing the minimum substring found
  *
- *      \c window-end-iter is an iterator to one-past-last element of the window
+ *      \c window_end_iter is an iterator to one-past-last element of the window
  *   \endparblock
  */
 template <typename ForwardIt>
