@@ -5,9 +5,11 @@
 #ifndef ALGORITHMS_MIN_GREATER_NUM_HPP_INCLUDED
 #define ALGORITHMS_MIN_GREATER_NUM_HPP_INCLUDED
 
-#include <utility> // for std::swap
 #include <algorithm>
 #include <iterator>
+#include <type_traits>
+#include <utility> // for std::swap
+#include <iostream>
 
 //TODO remove this docstring from here (?)
 /// Algorithms namespace.
@@ -29,13 +31,13 @@ namespace algos {
  * where:
  * - n - size of the input range
  *
- * \tparam Iter iterator type, must meet the requirements of
+ * \tparam BidirIt iterator type, must meet the requirements of
  *   <a href="https://en.cppreference.com/w/cpp/named_req/BidirectionalIterator">LegacyBidirectionalIterator</a>
  * \param first begin iterator of the range
  * \param last end (one-past-last) iterator of the range
  *
  * \return
- *   - \c true if the sequence has been found
+ *   - \c true if a minimum greater sequence exists
  *
  *     The input range now contains the sequence found
  *   - \c false otherwise
@@ -43,11 +45,12 @@ namespace algos {
  * \see
  *   <a href="https://en.cppreference.com/w/cpp/algorithm/lexicographical_compare">std::lexicographical_compare</a>
  */
-template <typename Iter>
-bool minGreaterSeqInPlace(Iter first, Iter last) {
-    // Iter must be bidirectional iterator
+template <typename BidirIt>
+bool minGreaterSeqInPlace(BidirIt first, BidirIt last) {
+    // BidirIt must be bidirectional iterator
+    //TODO see compiler error without this static_assert
+    static_assert(std::is_base_of_v<std::bidirectional_iterator_tag, typename std::iterator_traits<BidirIt>::iterator_category>);
     // cannot be const_iterator
-    //TODO add static_asserts
     if (first == last) { // empty range
         return false;
     }
@@ -62,11 +65,11 @@ bool minGreaterSeqInPlace(Iter first, Iter last) {
             return false;
         }
         elemToRight = firstLess;
-        firstLess = std::prev(firstLess); //TODO std::advance
+        --firstLess;
     }
 
     auto minGreaterElemToRight = elemToRight;
-    while ((elemToRight = std::next(elemToRight)) != last) {
+    while (++elemToRight != last) {
         if ((*firstLess < *elemToRight) && !(*minGreaterElemToRight < *elemToRight)) {
             // swap with the last min-greater elem
             // this breaks stability (meaning as in sort) -- TODO try to repair
@@ -80,23 +83,29 @@ bool minGreaterSeqInPlace(Iter first, Iter last) {
 
     // the right-rest is always in non-ascending order (from left to right)
     // sometimes already in non-descending order (e.g. 1222 -> 2122)
-    // make it non-descending
+    // make it non-descending (reverse the right-rest range)
 
     elemToRight = std::next(firstLess);
-    last = std::prev(last); //TODO std::advance
-    //TODO if constexpr (random access iterator) --> use operator< on iterators
+    --last;
     // operator< on iterators needs a LegacyRandomAccessIterator
-    while (elemToRight != last && std::prev(elemToRight) != last) {
-        std::iter_swap(elemToRight, last);
-        elemToRight = std::next(elemToRight); //TODO std::advance
-        last = std::prev(last); //TODO std::advance
+    if constexpr (std::is_base_of_v<std::random_access_iterator_tag, typename std::iterator_traits<BidirIt>::iterator_category>) {
+        std::cerr << "Chose random access iter\n"; // debug print
+        while (elemToRight < last) {
+            std::iter_swap(elemToRight, last);
+            ++elemToRight;
+            --last;
+        }
+    } else {
+        std::cerr << "Chose bidirectional iter\n"; // debug print
+        while (elemToRight != last && std::prev(elemToRight) != last) {
+            std::iter_swap(elemToRight, last);
+            ++elemToRight;
+            --last;
+        }
     }
 
     return true;
 }
-
-//TODO must work for reverse iterators
-//TODO types with working std::next(it) but not ++it
 
 } // namespace algos
 

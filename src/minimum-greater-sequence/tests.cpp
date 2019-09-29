@@ -1,6 +1,8 @@
 #include "minGreaterSeq.hpp"
 #include <array>
 #include <cstdint>
+#include <forward_list>
+#include <list>
 #include <string>
 #include <vector>
 #include <gtest/gtest.h>
@@ -10,21 +12,21 @@ namespace {
 namespace tests_type {    
 
 template <typename T = int>
-struct LessComparableType {
-    constexpr explicit LessComparableType(const T &val) noexcept
+struct LessThanComparableType {
+    constexpr explicit LessThanComparableType(const T &val) noexcept
         : val(val) {}
         
     T val;
 };
 
 template <typename T>
-constexpr inline bool operator<(const LessComparableType<T> &lhs, const LessComparableType<T> &rhs) noexcept {
+constexpr inline bool operator<(const LessThanComparableType<T> &lhs, const LessThanComparableType<T> &rhs) noexcept {
     return lhs.val < rhs.val;
 }
 
 // for unit tests
 template <typename T>
-constexpr inline bool operator==(const LessComparableType<T> &lhs, const LessComparableType<T> &rhs) noexcept {
+constexpr inline bool operator==(const LessThanComparableType<T> &lhs, const LessThanComparableType<T> &rhs) noexcept {
     return lhs.val == rhs.val;
 }
 
@@ -82,8 +84,8 @@ TEST(MinGreaterSeqInPlace, FindsMGSAndReturnsTrue) {
     }
 }
 
-TEST(MinGreaterSeqInPlace, WorksForLessComparableType) {
-    using elem_type = tests_type::LessComparableType<int>;
+TEST(MinGreaterSeqInPlace, WorksForLessThanComparableType) {
+    using elem_type = tests_type::LessThanComparableType<int>;
     std::array<elem_type, 3> testInput {
         elem_type{1}, elem_type{3}, elem_type{2}
     };
@@ -156,7 +158,54 @@ TEST(MinGreaterSeqInPlace, FindsMGSWhenOddNumOfElemsToSortAfterSwap) {
     );
 }
 
-//TODO test for various types: enums
+TEST(MinGreaterSeqInPlace, WorksForRandomAccessIterator) {
+    std::array testInput {1, 2, 3, 1, 0, -1, -2};
+    auto begin = testInput.begin();
+    auto end = testInput.end();
+
+    auto exists = algos::minGreaterSeqInPlace(begin, end);
+
+    EXPECT_EQ(true, exists);
+    EXPECT_EQ(
+        (std::array{1, 3, -2, -1, 0, 1, 2}),
+        testInput // modified
+    );
+}
+
+TEST(MinGreaterSeqInPlace, WorksForBidirIterator) {
+    std::list testInput {1, 2, 3, 1, 0, -1, -2};
+    auto begin = testInput.begin();
+    auto end = testInput.end();
+
+    auto exists = algos::minGreaterSeqInPlace(begin, end);
+
+    EXPECT_EQ(true, exists);
+    EXPECT_EQ(
+        (std::list{1, 3, -2, -1, 0, 1, 2}),
+        testInput // modified
+    );
+}
+
+// should not compile
+/*TEST(MinGreaterSeqInPlace, DoesntWorkForForwardIterator) {
+    std::forward_list testInput {1, 2, 3, 1, 0, -1, -2};
+    auto begin = testInput.begin();
+    auto end = testInput.end();
+
+    auto exists = algos::minGreaterSeqInPlace(begin, end);
+
+    EXPECT_EQ(true, exists);
+    EXPECT_EQ(
+        (std::list{1, 3, -2, -1, 0, 1, 2}),
+        testInput // modified
+    );
+}*/
+
+//TODO must work for reverse iterators
+//TODO types with working std::next(it) but not ++it
+//TODO cmake's try_compile for static_asserts + check compiler error: "static assertion failed"
+//TODO tests for stable-swaps <-- need an impl with stable sort (e.g. insertion sort) -- std::stable_sort
+//TODO test for various types: enums, does not for scoped enums (non-comparable (?))
 //TODO test on big input
 
 } // anonymous namespace

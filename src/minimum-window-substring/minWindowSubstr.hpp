@@ -5,10 +5,10 @@
 #ifndef ALGORITHMS_MIN_WINDOW_SUBSTR_HPP_INCLUDED
 #define ALGORITHMS_MIN_WINDOW_SUBSTR_HPP_INCLUDED
 
-#include <utility>
 #include <iterator>
 #include <type_traits>
 #include <unordered_map>
+#include <utility>
 
 /// Algorithms namespace.
 namespace algos {
@@ -27,7 +27,7 @@ using ReturnType = std::tuple<Iter, Iter, std::size_t>;
  * - n - size of the input range
  * - k - number of unique elements in the input range
  *
- * \tparam Iter iterator type, must meet the requirements of
+ * \tparam ForwardIt iterator type, must meet the requirements of
  *   <a href="https://en.cppreference.com/w/cpp/named_req/ForwardIterator">LegacyForwardIterator</a>
  * \param first begin iterator of the range
  * \param last end (one-past-last) iterator of the range
@@ -39,12 +39,12 @@ using ReturnType = std::tuple<Iter, Iter, std::size_t>;
  *      \c window-end-iter is an iterator to one-past-last element of the window
  *   \endparblock
  */
-template <typename Iter>
-ReturnType<Iter> minWindowSubstr(Iter first, Iter last) {
-    static_assert(std::is_base_of_v<std::forward_iterator_tag, typename std::iterator_traits<Iter>::iterator_category>);
+template <typename ForwardIt>
+ReturnType<ForwardIt> minWindowSubstr(ForwardIt first, ForwardIt last) {
+    static_assert(std::is_base_of_v<std::forward_iterator_tag, typename std::iterator_traits<ForwardIt>::iterator_category>);
     // or is_convertible_v ?
 
-    using value_type = typename std::iterator_traits<Iter>::value_type;
+    using value_type = typename std::iterator_traits<ForwardIt>::value_type;
     std::unordered_map<value_type, std::size_t> elementCounts;
     // const iter vs const_iter !
     for (/*const*/auto it = first; it != last; it = std::next(it)) { //TODO std::advance instead of std::next
@@ -52,14 +52,14 @@ ReturnType<Iter> minWindowSubstr(Iter first, Iter last) {
     }
     std::size_t uniqueElems = elementCounts.size(), elemsPresent = 0;
 
-    Iter wStart, wEnd;
+    ForwardIt wStart, wEnd;
     std::size_t wLength;
     bool initialized = false;
     wStart = wEnd = last;
     wLength = 0;
 
-    Iter currStart = first;  // current start inclusive
-    Iter newPos = currStart; // current end inclusive
+    ForwardIt currStart = first;  // current start inclusive
+    ForwardIt newPos = currStart; // current end inclusive
     for(; newPos != last; newPos = std::next(newPos)) {
         if (wLength == uniqueElems) { // found the first minimal window
             break;
