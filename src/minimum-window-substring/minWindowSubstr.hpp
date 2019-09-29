@@ -47,7 +47,7 @@ ReturnType<ForwardIt> minWindowSubstr(ForwardIt first, ForwardIt last) {
     using value_type = typename std::iterator_traits<ForwardIt>::value_type;
     std::unordered_map<value_type, std::size_t> elementCounts;
     // const iter vs const_iter !
-    for (/*const*/auto it = first; it != last; it = std::next(it)) { //TODO std::advance instead of std::next
+    for (/*const*/auto it = first; it != last; ++it) {
         elementCounts.try_emplace(*it, 0); //vs. insert({*it, 0})
     }
     std::size_t uniqueElems = elementCounts.size(), elemsPresent = 0;
@@ -60,7 +60,7 @@ ReturnType<ForwardIt> minWindowSubstr(ForwardIt first, ForwardIt last) {
 
     ForwardIt currStart = first;  // current start inclusive
     ForwardIt newPos = currStart; // current end inclusive
-    for(; newPos != last; newPos = std::next(newPos)) {
+    for(; newPos != last; ++newPos) {
         if (wLength == uniqueElems) { // found the first minimal window
             break;
         }
@@ -83,7 +83,7 @@ ReturnType<ForwardIt> minWindowSubstr(ForwardIt first, ForwardIt last) {
             if (count == 0) {
                 --elemsPresent;
             }
-            currStart = std::next(currStart);
+            ++currStart;
         }
     }
 

@@ -5,11 +5,10 @@
 #ifndef ALGORITHMS_MIN_GREATER_NUM_HPP_INCLUDED
 #define ALGORITHMS_MIN_GREATER_NUM_HPP_INCLUDED
 
-#include <algorithm>
+#include <algorithm> // for std::iter_swap, std::reverse
 #include <iterator>
 #include <type_traits>
 #include <utility> // for std::swap
-#include <iostream>
 
 //TODO remove this docstring from here (?)
 /// Algorithms namespace.
@@ -44,6 +43,8 @@ namespace algos {
  *
  * \see
  *   <a href="https://en.cppreference.com/w/cpp/algorithm/lexicographical_compare">std::lexicographical_compare</a>
+ *
+ * \todo add ExecutionPolicy - forward it to std::reverse
  */
 template <typename BidirIt>
 bool minGreaterSeqInPlace(BidirIt first, BidirIt last) {
@@ -86,23 +87,7 @@ bool minGreaterSeqInPlace(BidirIt first, BidirIt last) {
     // make it non-descending (reverse the right-rest range)
 
     elemToRight = std::next(firstLess);
-    --last;
-    // operator< on iterators needs a LegacyRandomAccessIterator
-    if constexpr (std::is_base_of_v<std::random_access_iterator_tag, typename std::iterator_traits<BidirIt>::iterator_category>) {
-        std::cerr << "Chose random access iter\n"; // debug print
-        while (elemToRight < last) {
-            std::iter_swap(elemToRight, last);
-            ++elemToRight;
-            --last;
-        }
-    } else {
-        std::cerr << "Chose bidirectional iter\n"; // debug print
-        while (elemToRight != last && std::prev(elemToRight) != last) {
-            std::iter_swap(elemToRight, last);
-            ++elemToRight;
-            --last;
-        }
-    }
+    std::reverse(elemToRight, last); // exactly (last - elemToRight)/2 swaps
 
     return true;
 }
