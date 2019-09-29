@@ -28,16 +28,16 @@ using ReturnType = std::tuple<Iter, Iter, std::size_t>;
  * - k - number of unique elements in the input range
  *
  * \tparam Iter iterator type, must meet the requirements of
- * <a href="https://en.cppreference.com/w/cpp/named_req/ForwardIterator">LegacyForwardIterator</a>
+ *   <a href="https://en.cppreference.com/w/cpp/named_req/ForwardIterator">LegacyForwardIterator</a>
  * \param first begin iterator of the range
  * \param last end (one-past-last) iterator of the range
  *
  * \return
- * \parblock
- * `tuple(window-start-iter, window-end-iter, window-length)` representing the minimum substring found
+ *   \parblock
+ *     `tuple(window-start-iter, window-end-iter, window-length)` representing the minimum substring found
  *
- * \c window-end-iter is an iterator to one-past-last element of the window
- * \endparblock
+ *      \c window-end-iter is an iterator to one-past-last element of the window
+ *   \endparblock
  */
 template <typename Iter>
 ReturnType<Iter> minWindowSubstr(Iter first, Iter last) {

@@ -31,4 +31,4 @@ find_package(Threads)
 #TODO automatic doxygen docs generation
 
 add_subdirectory(src/minimum-window-substring)
-add_subdirectory(src/minimum-greater-number)
+add_subdirectory(src/minimum-greater-sequence)

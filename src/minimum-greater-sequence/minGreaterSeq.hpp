@@ -15,7 +15,12 @@ namespace algos {
 
 /// Find minimum sequence greater than the given sequence using only the elements of this sequence.
 /**
- * Executes in-place, modifying the input range.
+ * Executes in place, modifying the input range.
+ *
+ * The sequences are compared lexicographically.
+ * This means that sequence A is a minimum sequence greater than sequence B (both of which contain only
+ * the elements present in sequence B) iff A is lexicographically greater than B and lexicographically less
+ * than all other sequences that are lexicographically greater than B (containing only the elements present in B).
  *
  * Complexity:
  * - Time:  O(n)
@@ -25,15 +30,18 @@ namespace algos {
  * - n - size of the input range
  *
  * \tparam Iter iterator type, must meet the requirements of
- * <a href="https://en.cppreference.com/w/cpp/named_req/BidirectionalIterator">LegacyBidirectionalIterator</a>
+ *   <a href="https://en.cppreference.com/w/cpp/named_req/BidirectionalIterator">LegacyBidirectionalIterator</a>
  * \param first begin iterator of the range
  * \param last end (one-past-last) iterator of the range
  *
  * \return
- * -  \c true if the sequence has been found
+ *   - \c true if the sequence has been found
  *
- *    The input range now contains the sequence found
- * -  \c false otherwise
+ *     The input range now contains the sequence found
+ *   - \c false otherwise
+ *
+ * \see
+ *   <a href="https://en.cppreference.com/w/cpp/algorithm/lexicographical_compare">std::lexicographical_compare</a>
  */
 template <typename Iter>
 bool minGreaterSeqInPlace(Iter first, Iter last) {
@@ -48,33 +56,33 @@ bool minGreaterSeqInPlace(Iter first, Iter last) {
     }
 
     auto elemToRight = std::prev(last);
-    auto firstLesser = std::prev(elemToRight);
-    while (!(*firstLesser < *elemToRight)) {
-        if (firstLesser == first) {
+    auto firstLess = std::prev(elemToRight);
+    while (!(*firstLess < *elemToRight)) {
+        if (firstLess == first) {
             return false;
         }
-        elemToRight = firstLesser;
-        firstLesser = std::prev(firstLesser); //TODO std::advance
+        elemToRight = firstLess;
+        firstLess = std::prev(firstLess); //TODO std::advance
     }
 
     auto minGreaterElemToRight = elemToRight;
     while ((elemToRight = std::next(elemToRight)) != last) {
-        if ((*firstLesser < *elemToRight) && (*elemToRight < *minGreaterElemToRight)) { // != in the second check is enough
+        if ((*firstLess < *elemToRight) && !(*minGreaterElemToRight < *elemToRight)) {
+            // swap with the last min-greater elem
+            // this breaks stability (meaning as in sort) -- TODO try to repair
             minGreaterElemToRight = elemToRight;
+            //TODO try checking if all elems are equal
         }
     }
 
     //using std::swap; // use ADL // std::iter_swap already uses it
-    std::iter_swap(firstLesser, minGreaterElemToRight);
+    std::iter_swap(firstLess, minGreaterElemToRight);
 
-    // the right-rest always in non-ascending order (from left to right)
+    // the right-rest is always in non-ascending order (from left to right)
     // sometimes already in non-descending order (e.g. 1222 -> 2122)
     // make it non-descending
 
-    elemToRight = std::next(firstLesser);
-    if (minGreaterElemToRight == elemToRight) { // the right-rest is already in non-descending order
-        return true;
-    }
+    elemToRight = std::next(firstLess);
     last = std::prev(last); //TODO std::advance
     //TODO if constexpr (random access iterator) --> use operator< on iterators
     // operator< on iterators needs a LegacyRandomAccessIterator
