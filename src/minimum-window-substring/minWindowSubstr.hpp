@@ -92,6 +92,9 @@ ReturnType<Iter> minWindowSubstr(Iter first, Iter last) {
 //TODO lastMinWindowSubstr()
 // easy way: reverse iterator
 
+//TODO minWindowSubstrNoPreproc()
+// without first iteration over all elements to put in the map
+
 } // namespace algos
 
 #endif // ALGORITHMS_MIN_WINDOW_SUBSTR_HPP_INCLUDED

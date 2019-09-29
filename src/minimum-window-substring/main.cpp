@@ -2,11 +2,12 @@
 #include <iostream>
 #include <array>
 
-int main() {
-    //std::string testInput = "abdbaadcbca"; // result: adcb [5-8(inclusive)]
-    //std::string testInput = "abcabcabcbbaacccdab";
+//TODO interactive
+// exec-name elem-type data
+//example: ./mws d 1.1 2.2 1.1 3.3
+int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
+    std::string testInput = "abcabcabcbbaacccdab";
     //std::string testInput = "abcb";
-    std::array<unsigned short, 10> testInput {1, 2, 3, 1, 3, 2, 4, 0, 1, 3};
     auto [wStart, wEnd, wLength] = algos::minWindowSubstr(testInput.cbegin(), testInput.cend());
 
     std::cout << "window length: " << wLength << ", index range: [" << std::distance(testInput.cbegin(), wStart)
