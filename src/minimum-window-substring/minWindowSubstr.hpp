@@ -27,7 +27,8 @@ using ReturnType = std::tuple<Iter, Iter, std::size_t>;
  * - n - size of the input range
  * - k - number of unique elements in the input range
  *
- * \tparam Iter iterator type, must meet the requirements of LegacyForwardIterator
+ * \tparam Iter iterator type, must meet the requirements of
+ * <a href="https://en.cppreference.com/w/cpp/named_req/ForwardIterator">LegacyForwardIterator</a>
  * \param first begin iterator of the range
  * \param last end (one-past-last) iterator of the range
  *

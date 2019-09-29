@@ -17,18 +17,29 @@ namespace algos {
 /**
  * Executes in-place, modifying the input range.
  *
- * \return
- * - \parblock
- *   \c true if the sequence has been found
+ * Complexity:
+ * - Time:  O(n)
+ * - Space: O(1)
  *
- *   The input range now contains the sequence found
- *   \endparblock
- * - \c false otherwise
+ * where:
+ * - n - size of the input range
+ *
+ * \tparam Iter iterator type, must meet the requirements of
+ * <a href="https://en.cppreference.com/w/cpp/named_req/BidirectionalIterator">LegacyBidirectionalIterator</a>
+ * \param first begin iterator of the range
+ * \param last end (one-past-last) iterator of the range
+ *
+ * \return
+ * -  \c true if the sequence has been found
+ *
+ *    The input range now contains the sequence found
+ * -  \c false otherwise
  */
 template <typename Iter>
 bool minGreaterSeqInPlace(Iter first, Iter last) {
     // Iter must be bidirectional iterator
     // cannot be const_iterator
+    //TODO add static_asserts
     if (first == last) { // empty range
         return false;
     }
