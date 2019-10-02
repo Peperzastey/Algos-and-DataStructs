@@ -32,6 +32,26 @@ constexpr inline bool operator==(const LessThanComparableType<T> &lhs, const Les
 
 } // namespace tests_types
 
+TEST(MinGreaterSeqInPlace, ReturnsFalseForEmptySeq) {
+    std::array<int, 0> testInput {};
+    auto begin = testInput.begin();
+    auto end = testInput.end();
+
+    auto exists = algos::minGreaterSeqInPlace(begin, end);
+
+    EXPECT_EQ(false, exists);
+}
+
+TEST(MinGreaterSeqInPlace, ReturnsFalseForSingleElemSeq) {
+    std::array testInput {-300};
+    auto begin = testInput.begin();
+    auto end = testInput.end();
+
+    auto exists = algos::minGreaterSeqInPlace(begin, end);
+
+    EXPECT_EQ(false, exists);
+}
+
 TEST(MinGreaterSeqInPlace, ReturnsFalseIfMGSDoesntExist) {
     {
         std::array<unsigned char, 3> testInput {2, 1, 1};
@@ -50,6 +70,63 @@ TEST(MinGreaterSeqInPlace, ReturnsFalseIfMGSDoesntExist) {
         auto exists = algos::minGreaterSeqInPlace(begin, end);
 
         EXPECT_EQ(false, exists);
+    }
+}
+
+//TODO gtest parameterized test
+TEST(MinGreaterSeqInPlace, WhenReturnsFalseSeqIsNotModified) {
+    {
+        using elem_type = std::uint8_t;
+        std::array<elem_type, 3> testInput {2, 1, 1};
+        auto begin = testInput.begin();
+        auto end = testInput.end();
+
+        auto exists = algos::minGreaterSeqInPlace(begin, end);
+
+        ASSERT_EQ(false, exists);
+        EXPECT_EQ(
+            (std::array<elem_type, 3>{2, 1, 1}),
+            testInput
+        );
+    }
+    {
+        std::array testInput {1, 1, 1, 1};
+        auto begin = testInput.begin();
+        auto end = testInput.end();
+
+        auto exists = algos::minGreaterSeqInPlace(begin, end);
+
+        ASSERT_EQ(false, exists);
+        EXPECT_EQ(
+            (std::array{1, 1, 1, 1}),
+            testInput
+        );
+    }
+    {
+        std::array<int, 0> testInput {};
+        auto begin = testInput.begin();
+        auto end = testInput.end();
+
+        auto exists = algos::minGreaterSeqInPlace(begin, end);
+
+        ASSERT_EQ(false, exists);
+        EXPECT_EQ(
+            (std::array<int, 0>{}),
+            testInput
+        );
+    }
+    {
+        std::array testInput {-300};
+        auto begin = testInput.begin();
+        auto end = testInput.end();
+
+        auto exists = algos::minGreaterSeqInPlace(begin, end);
+
+        ASSERT_EQ(false, exists);
+        EXPECT_EQ(
+            (std::array{-300}),
+            testInput
+        );
     }
 }
 
@@ -159,17 +236,32 @@ TEST(MinGreaterSeqInPlace, FindsMGSWhenOddNumOfElemsToSortAfterSwap) {
 }
 
 TEST(MinGreaterSeqInPlace, WorksForRandomAccessIterator) {
-    std::array testInput {1, 2, 3, 1, 0, -1, -2};
-    auto begin = testInput.begin();
-    auto end = testInput.end();
+    {
+        std::array testInput {1, 2, 3, 1, 0, -1, -2};
+        auto begin = testInput.begin();
+        auto end = testInput.end();
 
-    auto exists = algos::minGreaterSeqInPlace(begin, end);
+        auto exists = algos::minGreaterSeqInPlace(begin, end);
 
-    EXPECT_EQ(true, exists);
-    EXPECT_EQ(
-        (std::array{1, 3, -2, -1, 0, 1, 2}),
-        testInput // modified
-    );
+        EXPECT_EQ(true, exists);
+        EXPECT_EQ(
+            (std::array{1, 3, -2, -1, 0, 1, 2}),
+            testInput // modified
+        );
+    }
+    {
+        std::vector testInput {1, 2, 3, 1, 0, -1, -2};
+        auto begin = testInput.begin();
+        auto end = testInput.end();
+
+        auto exists = algos::minGreaterSeqInPlace(begin, end);
+
+        EXPECT_EQ(true, exists);
+        EXPECT_EQ(
+            (std::vector{1, 3, -2, -1, 0, 1, 2}),
+            testInput // modified
+        );
+    }
 }
 
 TEST(MinGreaterSeqInPlace, WorksForBidirIterator) {
@@ -186,6 +278,7 @@ TEST(MinGreaterSeqInPlace, WorksForBidirIterator) {
     );
 }
 
+//TODO cmake's try_compile for static_asserts + check compiler error: "static assertion failed"
 // should not compile
 /*TEST(MinGreaterSeqInPlace, DoesntWorkForForwardIterator) {
     std::forward_list testInput {1, 2, 3, 1, 0, -1, -2};
@@ -201,9 +294,9 @@ TEST(MinGreaterSeqInPlace, WorksForBidirIterator) {
     );
 }*/
 
+//TODO test for std::map (unordered) with swap specialization for value_type (key:=position in seq)
 //TODO must work for reverse iterators
 //TODO types with working std::next(it) but not ++it
-//TODO cmake's try_compile for static_asserts + check compiler error: "static assertion failed"
 //TODO tests for stable-swaps <-- need an impl with stable sort (e.g. insertion sort) -- std::stable_sort
 //TODO test for various types: enums, does not for scoped enums (non-comparable (?))
 //TODO test on big input

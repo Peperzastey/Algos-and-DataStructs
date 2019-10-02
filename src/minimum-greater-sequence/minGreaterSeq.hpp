@@ -16,7 +16,7 @@ namespace algos {
 
 /// Find minimum sequence greater than the given sequence using only the elements of this sequence.
 /**
- * Executes in place, modifying the input range.
+ * Executes in place, modifying the input sequence.
  *
  * The sequences are compared lexicographically.
  * This means that sequence A is a minimum sequence greater than sequence B (both of which contain only
@@ -28,18 +28,20 @@ namespace algos {
  * - Space: O(1)
  *
  * where:
- * - n - size of the input range
+ * - n - size of the input sequence
  *
  * \tparam BidirIt iterator type, must meet the requirements of
  *   <a href="https://en.cppreference.com/w/cpp/named_req/BidirectionalIterator">LegacyBidirectionalIterator</a>
- * \param first begin iterator of the range
- * \param last end (one-past-last) iterator of the range
+ * \param first begin iterator of the sequence
+ * \param last end (one-past-last) iterator of the sequence
  *
  * \return
  *   - \c true if a minimum greater sequence exists
  *
- *     The input range now contains the sequence found
+ *     The input sequence now contains the sequence found
  *   - \c false otherwise
+ *
+ *     The input sequence is unmodified
  *
  * \see
  *   <a href="https://en.cppreference.com/w/cpp/algorithm/lexicographical_compare">std::lexicographical_compare</a>
