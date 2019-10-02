@@ -15,7 +15,7 @@ template <typename T = int>
 struct LessThanComparableType {
     constexpr explicit LessThanComparableType(const T &val) noexcept
         : val(val) {}
-        
+
     T val;
 };
 
@@ -294,8 +294,12 @@ TEST(MinGreaterSeqInPlace, WorksForBidirIterator) {
     );
 }*/
 
-//TODO test for std::map (unordered) with swap specialization for value_type (key:=position in seq)
-//TODO must work for reverse iterators
+//TODO add test for reverse iterators (reverse sequence) [STL-compliance]
+//TODO add test for std::begin, std::end C-array specialization
+//TODO add test using raw pointer as iterator (random access iterator)
+    //e.g.: algos::minGreaterSeqInPlace(carray, carray + (sizeof carray / sizeof carray[0]))
+//TODO add test for std::map (unordered) with swap specialization for value_type (key:=position in seq)
+
 //TODO types with working std::next(it) but not ++it
 //TODO tests for stable-swaps <-- need an impl with stable sort (e.g. insertion sort) -- std::stable_sort
 //TODO test for various types: enums, does not for scoped enums (non-comparable (?))

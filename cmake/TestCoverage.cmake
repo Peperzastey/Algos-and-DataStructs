@@ -9,25 +9,32 @@
 # must be specified as a single string to not cause inserting of ';' between list elements
 # quotes must be escaped to survive into lcov call by sh
 
+option(COV_VERBOSE "Make coverage target output verbose" OFF)
+if(COV_VERBOSE)
+    set(COV_QUIET_OPT "")
+else()
+    set(COV_QUIET_OPT "--quiet")
+endif()
+
 # https://github.com/bilke/cmake-modules/blob/master/CodeCoverage.cmake
 add_custom_target(coverage
     # clean after previous coverage
-    COMMAND lcov --zerocounters --directory . --quiet
+    COMMAND lcov --zerocounters --directory . ${COV_QUIET_OPT}
     # Run tests
     #COMMAND ${Coverage_EXECUTABLE} ${Coverage_EXECUTABLE_ARGS}
     COMMAND ctest --output-on-failure    
     # Capturing lcov counters and generating report
     #COMMAND ${Coverage_LCOV_ARGS} --gcov-tool ${GCOV_PATH} --directory . --capture --output-file coverage.info
-    COMMAND lcov --capture --directory . --base-directory . --rc lcov_branch_coverage=1 --output-file coverage.info.total --quiet
+    COMMAND lcov --capture --directory . --base-directory . --rc lcov_branch_coverage=1 --output-file coverage.info.total ${COV_QUIET_OPT}
     #TODO add --quiet
     #TODO add explicit --gcov-tool ${GCOV}
     #TODO lcovrc config file instead of --rc
     #--directory ${CMAKE_BINARY_DIR} / CURRENT
-    COMMAND lcov --remove coverage.info.total "\"/usr/*\"" "\"*test*.cpp\"" --rc lcov_branch_coverage=1 --output-file coverage.info --quiet #TODO ${COVERAGE_EXCLUDE}
+    COMMAND lcov --remove coverage.info.total "\"/usr/*\"" "\"*test*.cpp\"" --rc lcov_branch_coverage=1 --output-file coverage.info ${COV_QUIET_OPT} #TODO ${COVERAGE_EXCLUDE}
     #TODO COMMAND ${LCOV_PATH} ${Coverage_LCOV_ARGS} --gcov-tool ${GCOV_PATH} --remove ${Coverage_NAME}.total ${COVERAGE_LCOV_EXCLUDES} --output-file ${PROJECT_BINARY_DIR}/${Coverage_NAME}.info.cleaned
     
     #COMMAND ${GENHTML_PATH} ${Coverage_GENHTML_ARGS} -o ${Coverage_NAME} ${PROJECT_BINARY_DIR}/${Coverage_NAME}.info.cleaned
-    COMMAND genhtml --legend --branch-coverage --rc lcov_branch_coverage=1 coverage.info --output-directory coverage-html --quiet
+    COMMAND genhtml --legend --branch-coverage --rc lcov_branch_coverage=1 coverage.info --output-directory coverage-html ${COV_QUIET_OPT}
     #TODO --demangle-cpp <-- TODO find_program(c++filt) (required for this option)
 
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}

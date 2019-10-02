@@ -12,6 +12,7 @@ set(CMAKE_CXX_FLAGS_COVERAGE "-O0 -g --coverage")
 # if(NOT CMAKE_BUILD_TYPE)
 #     set(CMAKE_BUILD_TYPE Debug)
 # endif()
+message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 
 set(CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -41,6 +42,10 @@ include(TestCoverage)
 # profiling using callgrind -- in huge test cases
 
 #TODO automatic doxygen docs generation
+# configure_file docs/Doxyfile.in
+#  set INPUT to ${PROJECT_SOURCE_DIR}/src
+#  set OUTPUT_DIRECTORY to ${PROJECT_BINARY_DIR}/docs
+#now it's necessary that you run: `doxygen docs/Doxyfile 1>/dev/null` from ${PROJECT_SOURCE_DIR}
 
 add_subdirectory(src/minimum-window-substring)
 add_subdirectory(src/minimum-greater-sequence)
