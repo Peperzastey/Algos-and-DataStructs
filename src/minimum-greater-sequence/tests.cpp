@@ -299,6 +299,8 @@ TEST(MinGreaterSeqInPlace, WorksForBidirIterator) {
 //TODO add test using raw pointer as iterator (random access iterator)
     //e.g.: algos::minGreaterSeqInPlace(carray, carray + (sizeof carray / sizeof carray[0]))
 //TODO add test for std::map (unordered) with swap specialization for value_type (key:=position in seq)
+//TODO add test for carray as value_type (e.g. vector of arrays)
+//TODO add test for std::unique_ptr as value_type
 
 //TODO types with working std::next(it) but not ++it
 //TODO tests for stable-swaps <-- need an impl with stable sort (e.g. insertion sort) -- std::stable_sort

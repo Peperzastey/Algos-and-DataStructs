@@ -6,13 +6,31 @@
 #define ALGORITHMS_MIN_GREATER_NUM_HPP_INCLUDED
 
 #include <algorithm>
+#include <cassert>
 #include <iterator>
 #include <type_traits>
-#include <utility> // for std::swap
+#include <utility> // std::declval
 
-//TODO remove this docstring from here (?)
+//TODO remove this docstring from here? (duplicate)
 /// Algorithms namespace.
 namespace algos {
+
+namespace {
+
+// primary template handles types that do not support operator<
+template <typename, typename = std::void_t<> >
+struct has_operator_less : std::false_type {};
+
+// specialization recognizes types that do support operator<
+template <typename T>
+struct has_operator_less<T,
+        std::void_t<decltype( std::declval<T>() < std::declval<T>() )>
+    > : std::true_type {};
+
+template <typename T>
+inline constexpr bool has_operator_less_v = has_operator_less<T>::value;
+
+} // anonymous namespace
 
 /// Find minimum sequence greater than the given sequence using only the elements of this sequence.
 /**
@@ -34,10 +52,13 @@ namespace algos {
  *   \parblock
  *     iterator type, must meet the requirements of
  *     <a href="https://en.cppreference.com/w/cpp/named_req/BidirectionalIterator">LegacyBidirectionalIterator</a>
+ *     and
+ *     <a href="https://en.cppreference.com/w/cpp/named_req/ValueSwappable">ValueSwappable</a>
  *
  *     \c typename \c std\::iterator_traits<BidirIt>\::value_type must meet the requirements of
  *     <a href="https://en.cppreference.com/w/cpp/named_req/LessThanComparable">LessThanComparable</a>.
- *     This is the only requirement on \c value_type
+ *     (and
+ *     <a href="https://en.cppreference.com/w/cpp/named_req/Swappable">Swappable</a>)
  *   \endparblock
  * \param first begin iterator of the sequence
  * \param last end (one-past-last) iterator of the sequence
@@ -54,12 +75,16 @@ namespace algos {
  *   <a href="https://en.cppreference.com/w/cpp/algorithm/lexicographical_compare">std::lexicographical_compare</a>
  *
  * \todo add ExecutionPolicy - forward it to std::reverse, std::adjacent_find
+ * \todo add second version of this algorithm: minGreaterSeqInPlace(BidirIt first, BidirIt last, Compare comp)
+ *   where Compare is a <a href="https://en.cppreference.com/w/cpp/named_req/BinaryPredicate">BinaryPredicate</a>
  */
 template <typename BidirIt>
 bool minGreaterSeqInPlace(BidirIt first, BidirIt last) {
-    // BidirIt must be bidirectional iterator
-    //TODO see compiler error without this static_assert
+    using value_type = typename std::iterator_traits<BidirIt>::value_type;
     static_assert(std::is_base_of_v<std::bidirectional_iterator_tag, typename std::iterator_traits<BidirIt>::iterator_category>);
+    static_assert(has_operator_less_v<value_type>);
+    static_assert(std::is_convertible_v<decltype( std::declval<value_type>() < std::declval<value_type>() ), bool>);
+    static_assert(std::is_swappable_v<value_type>);
     // cannot be const_iterator
 
     auto revFirst = std::make_reverse_iterator(last);
@@ -67,33 +92,26 @@ bool minGreaterSeqInPlace(BidirIt first, BidirIt last) {
     // not using std::greater{} because it uses operator> instead of operator< and we only require LessThanComparable
     // deduced type shall be the same (except cv-qual) as typename std::iterator_traits<BidirIt>::value_type
     //TODO add static_asserts in lambda (just to be 100% sure)
-    auto revLastGreater = std::adjacent_find(revFirst, revLast, [](const auto &lhs, const auto &rhs) { return rhs < lhs; });
+    auto revLastGreater = std::adjacent_find(revFirst, revLast, [](const auto &lhs, const auto &rhs) { // O(distance) comparisons
+        // use std::decay_t<T> as short for std::remove_cv_t<std::remove_reference_t<T> >
+        //TODO check if it makes any problems
+        static_assert(std::is_same_v<value_type, std::decay_t<decltype(lhs)> >);
+        static_assert(std::is_same_v<value_type, std::decay_t<decltype(lhs)> >);
+        return rhs < lhs;
+    });
     if (revLastGreater == revLast) {
         return false;
     }
-    auto elemToRight = std::prev(revLastGreater.base()); // &*rit == &*(rit.base() - 1)
-    auto firstLess = std::prev(elemToRight);
+    auto revFirstLess = std::next(revLastGreater);
 
-    //TODO operate on reverse_iterators; std::iter_swap can handle differing iterator types
-    //TODO std::find_if
-    auto minGreaterElemToRight = elemToRight;
-    while (++elemToRight != last) {
-        if ((*firstLess < *elemToRight) && !(*minGreaterElemToRight < *elemToRight)) {
-            // swap with the last min-greater elem
-            // this breaks stability (meaning as in sort) -- TODO try to repair
-            minGreaterElemToRight = elemToRight;
-            //TODO try checking if all elems are equal
-        }
-    }
+    // the right-rest is always in non-descending order (looking from right to left)
+    auto revMinGreaterElemToRight = std::upper_bound(revFirst, revFirstLess, *revFirstLess); // O(lg(distance)) comparisons
+    assert(revMinGreaterElemToRight != revFirstLess);
 
-    //using std::swap; // use ADL // std::iter_swap already uses it
-    std::iter_swap(firstLess, minGreaterElemToRight);
+    std::iter_swap(revFirstLess, revMinGreaterElemToRight); // uses ADL to find swap() for value_type
 
-    // the right-rest is always in non-ascending order (from left to right)
-    // make it non-descending (reverse the right-rest range)
-
-    elemToRight = std::next(firstLess);
-    std::reverse(elemToRight, last); // exactly (last - elemToRight)/2 swaps
+    // make the order of right-rest non-ascending (reverse it)
+    std::reverse(revFirst, revFirstLess); // exactly distance/2 swaps
 
     return true;
 }
