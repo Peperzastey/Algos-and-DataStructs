@@ -83,6 +83,7 @@ bool minGreaterSeqInPlace(BidirIt first, BidirIt last) {
     using value_type = typename std::iterator_traits<BidirIt>::value_type;
     static_assert(std::is_base_of_v<std::bidirectional_iterator_tag, typename std::iterator_traits<BidirIt>::iterator_category>);
     static_assert(has_operator_less_v<value_type>);
+    //TODO check for types with member function T::operator<(const T&) (is this declval < declval OK?)
     static_assert(std::is_convertible_v<decltype( std::declval<value_type>() < std::declval<value_type>() ), bool>);
     static_assert(std::is_swappable_v<value_type>);
     // cannot be const_iterator
@@ -90,8 +91,6 @@ bool minGreaterSeqInPlace(BidirIt first, BidirIt last) {
     auto revFirst = std::make_reverse_iterator(last);
     auto revLast = std::make_reverse_iterator(first);
     // not using std::greater{} because it uses operator> instead of operator< and we only require LessThanComparable
-    // deduced type shall be the same (except cv-qual) as typename std::iterator_traits<BidirIt>::value_type
-    //TODO add static_asserts in lambda (just to be 100% sure)
     auto revLastGreater = std::adjacent_find(revFirst, revLast, [](const auto &lhs, const auto &rhs) { // O(distance) comparisons
         // use std::decay_t<T> as short for std::remove_cv_t<std::remove_reference_t<T> >
         //TODO check if it makes any problems
