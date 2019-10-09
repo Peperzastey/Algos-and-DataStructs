@@ -1,5 +1,9 @@
 #TODO
 # find_program lcov, genhtml, (gcov)
+#TODO
+# add add_coverage_dependency(target) function
+#TODO
+# add target to clean generated files by coverage target
 
 #TODO
 # https://cmake.org/cmake/help/latest/manual/ctest.1.html#ctest-coverage-step

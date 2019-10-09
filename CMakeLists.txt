@@ -49,3 +49,4 @@ include(TestCoverage)
 
 add_subdirectory(src/minimum-window-substring)
 add_subdirectory(src/minimum-greater-sequence)
+add_subdirectory(src/anagram-lookup)

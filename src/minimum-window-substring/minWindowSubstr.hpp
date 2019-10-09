@@ -14,6 +14,9 @@
 namespace algos {
 
 /// Return type of minWindowSubstr() function.
+/**
+ * \todo rename to carry connection with minWindowSubstr
+ */
 template <typename Iter>
 using ReturnType = std::tuple<Iter, Iter, std::size_t>;
 

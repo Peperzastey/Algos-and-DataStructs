@@ -15,6 +15,7 @@
 /// Algorithms namespace.
 namespace algos {
 
+//TODO does anonymous namespace in header file make any difference?
 namespace {
 
 // primary template handles types that do not support operator<
@@ -56,7 +57,7 @@ inline constexpr bool has_operator_less_v = has_operator_less<T>::value;
  *     <a href="https://en.cppreference.com/w/cpp/named_req/ValueSwappable">ValueSwappable</a>
  *
  *     \c typename \c std\::iterator_traits<BidirIt>\::value_type must meet the requirements of
- *     <a href="https://en.cppreference.com/w/cpp/named_req/LessThanComparable">LessThanComparable</a>.
+ *     <a href="https://en.cppreference.com/w/cpp/named_req/LessThanComparable">LessThanComparable</a>
  *     (and
  *     <a href="https://en.cppreference.com/w/cpp/named_req/Swappable">Swappable</a>)
  *   \endparblock
@@ -90,7 +91,8 @@ bool minGreaterSeqInPlace(BidirIt first, BidirIt last) {
 
     auto revFirst = std::make_reverse_iterator(last);
     auto revLast = std::make_reverse_iterator(first);
-    // not using std::greater{} because it uses operator> instead of operator< and we only require LessThanComparable
+    // not using std::greater<>{} because it uses operator> instead of operator< and we only require LessThanComparable
+    //TODO try: std::bind on std::greater<>{}
     auto revLastGreater = std::adjacent_find(revFirst, revLast, [](const auto &lhs, const auto &rhs) { // O(distance) comparisons
         // use std::decay_t<T> as short for std::remove_cv_t<std::remove_reference_t<T> >
         //TODO check if it makes any problems
